@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Time-Lapse - Tutorial</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      color: #24292f;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.95;
+    }
+
+    .content {
+      padding: 40px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section h2 {
+      color: #667eea;
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .section h3 {
+      color: #764ba2;
+      font-size: 1.3em;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    .step {
+      background: #f6f8fa;
+      border-left: 4px solid #667eea;
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+    .step strong {
+      color: #667eea;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .feature-list li {
+      padding: 10px 0;
+      padding-left: 30px;
+      position: relative;
+    }
+
+    .feature-list li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #667eea;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .keyboard-shortcuts {
+      background: #f6f8fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .shortcut {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e1e4e8;
+    }
+
+    .shortcut:last-child {
+      border-bottom: none;
+    }
+
+    .key {
+      background: #667eea;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-weight: bold;
+      white-space: nowrap;
+      margin-right: 15px;
+    }
+
+    .description {
+      flex: 1;
+      color: #666;
+    }
+
+    .code-block {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: "Courier New", monospace;
+      font-size: 0.9em;
+      margin: 15px 0;
+    }
+
+    .tip {
+      background: #fffbea;
+      border-left: 4px solid #ffb84d;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .tip strong {
+      color: #ff9500;
+    }
+
+    .warning {
+      background: #fee;
+      border-left: 4px solid #f66;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .warning strong {
+      color: #f66;
+    }
+
+    .footer {
+      background: #f6f8fa;
+      padding: 20px 40px;
+      text-align: center;
+      color: #666;
+      border-top: 1px solid #e1e4e8;
+    }
+
+    .footer a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #764ba2;
+    }
+
+    .video-placeholder {
+      background: #f6f8fa;
+      border: 2px dashed #667eea;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      color: #666;
+      margin: 20px 0;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e1e4e8;
+    }
+
+    .tab {
+      background: none;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      color: #666;
+      font-size: 1em;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab:hover {
+      color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.8em;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .section h2 {
+        font-size: 1.4em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>⏱️ Request Time-Lapse</h1>
+      <p>Record, analyze, and replay network requests in Chrome DevTools</p>
+    </div>
+
+    <div class="content">
+      <!-- Getting Started -->
+      <div class="section">
+        <h2>🚀 Getting Started</h2>
+        
+        <h3>Opening the Extension</h3>
+        <div class="step">
+          <strong>Step 1:</strong> Open Chrome DevTools (F12 or Right-click → Inspect)
+        </div>
+        <div class="step">
+          <strong>Step 2:</strong> Look for the "Request Time-Lapse" tab at the top
+        </div>
+        <div class="step">
+          <strong>Step 3:</strong> Navigate your website or API - requests are recorded automatically
+        </div>
+
+        <h3>First Time Setup</h3>
+        <p>No setup needed! The extension starts recording automatically when DevTools is open.</p>
+      </div>
+
+      <!-- Main Features -->
+      <div class="section">
+        <h2>✨ Main Features</h2>
+        <ul class="feature-list">
+          <li><strong>Record Network Requests:</strong> Automatically captures all HTTP/HTTPS requests</li>
+          <li><strong>Filter Requests:</strong> Filter by status code, latency, or response content</li>
+          <li><strong>Compare Snapshots:</strong> Side-by-side comparison of different request snapshots</li>
+          <li><strong>Export Data:</strong> Export as JSON, CSV, or HTML formats</li>
+          <li><strong>Storage Monitor:</strong> See how much storage space is being used</li>
+          <li><strong>Theme Toggle:</strong> Switch between dark and light themes</li>
+          <li><strong>Keyboard Shortcuts:</strong> Power user shortcuts for quick access</li>
+        </ul>
+      </div>
+
+      <!-- Using Filters -->
+      <div class="section">
+        <h2>🔍 Filtering Requests</h2>
+        
+        <h3>Status Code Filter</h3>
+        <div class="step">
+          Enter HTTP status codes (comma-separated): <code>200,201,204</code>
+        </div>
+        <p>Common status codes:</p>
+        <ul class="feature-list">
+          <li>2xx (200, 201, 204) - Success responses</li>
+          <li>3xx (301, 302, 304) - Redirects</li>
+          <li>4xx (400, 401, 403, 404) - Client errors</li>
+          <li>5xx (500, 502, 503) - Server errors</li>
+        </ul>
+
+        <h3>Latency Filter</h3>
+        <div class="step">
+          Enter maximum latency in milliseconds: <code>1000</code>
+        </div>
+        <p>Shows only requests that completed within the specified time.</p>
+
+        <h3>Response Content Filter</h3>
+        <div class="step">
+          Search in response body: <code>error</code>, <code>success</code>, etc.
+        </div>
+        <p>Case-insensitive search through response content.</p>
+
+        <div class="tip">
+          <strong>💡 Tip:</strong> Combine multiple filters to narrow down results quickly!
+        </div>
+      </div>
+
+      <!-- Keyboard Shortcuts -->
+      <div class="section">
+        <h2>⌨️ Keyboard Shortcuts</h2>
+        
+        <div class="keyboard-shortcuts">
+          <div class="shortcut">
+            <div>
+              <span class="key">Ctrl + K</span>
+              <span class="key">Cmd + K</span>
+            </div>
+            <div class="description">Focus on search/filter input</div>
+          </div>
+          
+          <div class="shortcut">
+            <div>
+              <span class="key">Ctrl + E</span>
+              <span class="key">Cmd + E</span>
+            </div>
+            <div class="description">Open export menu</div>
+          </div>
+          
+          <div class="shortcut">
+            <div>
+              <span class="key">Ctrl + T</span>
+              <span class="key">Cmd + T</span>
+            </div>
+            <div class="description">Toggle dark/light theme</div>
+          </div>
+          
+          <div class="shortcut">
+            <div>
+              <span class="key">Ctrl + Shift + C</span>
+              <span class="key">Cmd + Shift + C</span>
+            </div>
+            <div class="description">Toggle compare mode</div>
+          </div>
+          
+          <div class="shortcut">
+            <div>
+              <span class="key">↑ ↓</span>
+            </div>
+            <div class="description">Navigate through requests</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exporting Data -->
+      <div class="section">
+        <h2>📥 Exporting Data</h2>
+        
+        <h3>Export Formats</h3>
+        
+        <div class="step">
+          <strong>JSON Export:</strong> Full request data with all details - best for data processing
+        </div>
+        
+        <div class="step">
+          <strong>CSV Export:</strong> Spreadsheet format - easy to analyze in Excel/Sheets
+        </div>
+        
+        <div class="step">
+          <strong>HTML Export:</strong> Beautiful HTML report - great for sharing with team
+        </div>
+
+        <h3>How to Export</h3>
+        <ol style="margin-left: 20px; margin-top: 15px;">
+          <li>Click the export button or press <span class="key">Ctrl + E</span></li>
+          <li>Choose your desired format</li>
+          <li>The file will download automatically</li>
+          <li>Open in your preferred application</li>
+        </ol>
+
+        <div class="tip">
+          <strong>💡 Tip:</strong> Use CSV format to create pivot tables and charts in Excel!
+        </div>
+      </div>
+
+      <!-- Compare Mode -->
+      <div class="section">
+        <h2>🔄 Comparing Snapshots</h2>
+        
+        <h3>How to Use Compare Mode</h3>
+        <div class="step">
+          <strong>Step 1:</strong> Press <span class="key">Ctrl + Shift + C</span> to enable compare mode
+        </div>
+        <div class="step">
+          <strong>Step 2:</strong> Click on the first request snapshot to select it
+        </div>
+        <div class="step">
+          <strong>Step 3:</strong> Click on the second request snapshot to compare
+        </div>
+        <div class="step">
+          <strong>Step 4:</strong> Review the side-by-side comparison with highlighted differences
+        </div>
+
+        <div class="tip">
+          <strong>💡 Use Case:</strong> Compare API responses before and after a code change to ensure regression didn't occur.
+        </div>
+      </div>
+
+      <!-- Storage & Performance -->
+      <div class="section">
+        <h2>💾 Storage & Performance</h2>
+        
+        <h3>Storage Indicator</h3>
+        <p>Shows your current storage usage. The indicator changes color:</p>
+        <ul class="feature-list">
+          <li><strong>Green:</strong> Under 50% - plenty of space</li>
+          <li><strong>Yellow:</strong> 50-89% - getting full</li>
+          <li><strong>Red:</strong> 90%+ - warning, clear old data</li>
+        </ul>
+
+        <h3>Clearing Data</h3>
+        <p>To free up space, clear old requests from the panel or export them first.</p>
+
+        <div class="warning">
+          <strong>⚠️ Warning:</strong> Clearing data is permanent. Export before clearing if you need to preserve the data!
+        </div>
+      </div>
+
+      <!-- Themes -->
+      <div class="section">
+        <h2>🌓 Themes</h2>
+        
+        <p>The extension supports both dark and light themes:</p>
+        
+        <h3>Dark Theme (Default)</h3>
+        <p>Easy on the eyes in low-light environments. Press <span class="key">Ctrl + T</span> to switch.</p>
+
+        <h3>Light Theme</h3>
+        <p>Better readability in bright environments. Your preference is saved automatically.</p>
+
+        <div class="tip">
+          <strong>💡 Tip:</strong> The theme preference is remembered across sessions!
+        </div>
+      </div>
+
+      <!-- Troubleshooting -->
+      <div class="section">
+        <h2>🐛 Troubleshooting</h2>
+        
+        <h3>Requests not appearing?</h3>
+        <div class="step">
+          1. Ensure DevTools is open and the Request Time-Lapse tab is active
+        </div>
+        <div class="step">
+          2. Try refreshing the page (F5)
+        </div>
+        <div class="step">
+          3. Make sure storage permissions are enabled
+        </div>
+
+        <h3>Storage full warning?</h3>
+        <div class="step">
+          1. Export your current data to preserve it
+        </div>
+        <div class="step">
+          2. Clear the storage from the indicator
+        </div>
+        <div class="step">
+          3. Reload the page to start fresh
+        </div>
+
+        <h3>Performance issues?</h3>
+        <div class="step">
+          1. Filter requests to show only what you need
+        </div>
+        <div class="step">
+          2. Clear old data periodically
+        </div>
+        <div class="step">
+          3. Restart DevTools if it becomes sluggish
+        </div>
+      </div>
+
+      <!-- Tips & Best Practices -->
+      <div class="section">
+        <h2>💡 Tips & Best Practices</h2>
+        
+        <ul class="feature-list">
+          <li><strong>Regular Exports:</strong> Export data weekly to create a history of API behavior</li>
+          <li><strong>Use Filters:</strong> Filter before analyzing to focus on relevant requests</li>
+          <li><strong>Compare Regularly:</strong> Compare snapshots before and after deployments to catch regressions</li>
+          <li><strong>Monitor Storage:</strong> Keep an eye on the storage indicator to avoid data loss</li>
+          <li><strong>Learn Shortcuts:</strong> Keyboard shortcuts significantly speed up your workflow</li>
+          <li><strong>Export to Share:</strong> Use HTML export to share findings with non-technical team members</li>
+        </ul>
+      </div>
+
+      <!-- Support & Resources -->
+      <div class="section">
+        <h2>📞 Support & Resources</h2>
+        
+        <p><strong>Need help?</strong> Check out these resources:</p>
+        
+        <ul class="feature-list">
+          <li><a href="https://github.com/jomardyan/Request-Time-Lapse" target="_blank">GitHub Repository</a> - Source code and issue tracker</li>
+          <li><a href="https://github.com/jomardyan/Request-Time-Lapse/issues" target="_blank">Report Issues</a> - Found a bug? Let us know!</li>
+          <li><a href="https://github.com/jomardyan/Request-Time-Lapse/discussions" target="_blank">Discussions</a> - Ask questions and share ideas</li>
+        </ul>
+
+        <div class="tip">
+          <strong>💡 Pro Tip:</strong> Star us on GitHub to stay updated with new features!
+        </div>
+      </div>
+
+      <!-- Getting Started Button -->
+      <div style="text-align: center; margin-top: 40px;">
+        <button onclick="closeWindow()">👍 Got It! Start Using</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Request Time-Lapse v0.1.0 • Created by <a href="https://github.com/jomardyan" target="_blank">Hayk Jomardyan</a></p>
+      <p style="margin-top: 10px; font-size: 0.9em;">
+        <a href="https://github.com/jomardyan/Request-Time-Lapse" target="_blank">GitHub</a> •
+        <a href="https://chrome.google.com/webstore" target="_blank">Chrome Web Store</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    function closeWindow() {
+      // Close the tutorial window
+      window.close();
+    }
+
+    // Auto-close after 5 minutes of inactivity (optional)
+    let inactivityTimer;
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        // Optionally close: window.close();
+      }, 5 * 60 * 1000);
+    }
+
+    document.addEventListener('mousemove', resetInactivityTimer);
+    document.addEventListener('keypress', resetInactivityTimer);
+    resetInactivityTimer();
+  </script>
+</body>
+</html>

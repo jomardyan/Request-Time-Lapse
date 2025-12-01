@@ -5,6 +5,7 @@
   "scripts": {
     "generate-assets": "node generate-assets.js",
     "generate-assets:watch": "nodemon generate-assets.js",
+    "generate-icons": "node generate-icons.js",
     "pack": "node pack-extension.js"
   },
   "devDependencies": {
