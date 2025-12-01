@@ -1,0 +1,23 @@
+{
+  "name": "request-time-lapse",
+  "version": "0.1.0",
+  "description": "Generate promotional assets for Request Time-Lapse DevTools Extension",
+  "scripts": {
+    "generate-assets": "node generate-assets.js",
+    "generate-assets:watch": "nodemon generate-assets.js",
+    "pack": "node pack-extension.js"
+  },
+  "devDependencies": {
+    "archiver": "^6.0.2",
+    "nodemon": "^3.0.1",
+    "playwright": "^1.40.0"
+  },
+  "keywords": [
+    "chrome-extension",
+    "devtools",
+    "asset-generation",
+    "playwright"
+  ],
+  "author": "",
+  "license": "MIT"
+}

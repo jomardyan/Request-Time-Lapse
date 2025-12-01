@@ -1,0 +1,9 @@
+{
+  "name": "Request Time-Lapse",
+  "description": "DevTools panel that records, groups, and replays network request history for API regression debugging.",
+  "version": "0.1.0",
+  "manifest_version": 3,
+  "devtools_page": "devtools.html",
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"]
+}

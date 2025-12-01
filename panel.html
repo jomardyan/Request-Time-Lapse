@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Request Time-Lapse</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <div class="title">Request Time-Lapse</div>
+        <div class="subtitle">Time-travel your API calls across reloads</div>
+      </div>
+      <div class="header-actions">
+        <span id="recordingStatus" class="pill pill-live">Recording</span>
+        <span id="storageStatus" class="pill" title="IndexedDB storage usage">📊 0%</span>
+        <button id="exportBundle" class="ghost">Export bundle</button>
+        <button id="clearData" class="ghost">Clear</button>
+      </div>
+    </header>
+
+    <section class="controls">
+      <label>
+        Environment tag
+        <input id="environmentFilter" type="text" placeholder="dev/stage/prod" />
+      </label>
+      <label>
+        Search endpoint
+        <input id="endpointSearch" type="text" placeholder="api/users" />
+      </label>
+      <label>
+        Status filter
+        <input id="statusFilter" type="text" placeholder="200,404,500" />
+      </label>
+      <label>
+        Max latency (ms)
+        <input id="latencyFilter" type="number" placeholder="5000" min="0" />
+      </label>
+      <label>
+        Response filter
+        <input id="responseFilter" type="text" placeholder="keyword search" />
+      </label>
+      <button id="themeToggle" class="ghost" title="Toggle theme (Ctrl+T)">🌙 Dark</button>
+      <button id="exportBundleBtn" class="ghost" title="Export JSON (Ctrl+E)">Export JSON</button>
+    </section>
+
+    <main class="layout">
+      <section class="column endpoints">
+        <div class="section-title">Endpoints</div>
+        <div id="endpointsList" class="list"></div>
+      </section>
+      <section class="column timeline">
+        <div class="section-title">Timeline</div>
+        <div id="timelineList" class="list"></div>
+      </section>
+      <section class="column details">
+        <div class="section-title">Details & Diff
+          <button id="compareToggle" class="compare-btn" title="Compare mode (Ctrl+Shift+C)">⊙</button>
+        </div>
+        <div id="detailsView" class="details-view">
+          <div class="detail-group">
+            <div class="label">Request</div>
+            <pre id="requestDetail" class="code-block"></pre>
+          </div>
+          <div class="detail-group">
+            <div class="label">Response</div>
+            <pre id="responseDetail" class="code-block"></pre>
+          </div>
+          <div class="detail-group">
+            <div class="label">Schema / JSON diff (vs previous)</div>
+            <pre id="diffDetail" class="code-block"></pre>
+          </div>
+        </div>
+        <div id="compareView" class="details-view" style="display: none;">
+          <div class="compare-header">
+            <div>Snapshot 1</div>
+            <div>Snapshot 2</div>
+          </div>
+          <div class="compare-body">
+            <div class="compare-section">
+              <div class="label">Request 1</div>
+              <pre id="compareRequest1" class="code-block"></pre>
+            </div>
+            <div class="compare-section">
+              <div class="label">Request 2</div>
+              <pre id="compareRequest2" class="code-block"></pre>
+            </div>
+          </div>
+          <div class="compare-body">
+            <div class="compare-section">
+              <div class="label">Response 1</div>
+              <pre id="compareResponse1" class="code-block"></pre>
+            </div>
+            <div class="compare-section">
+              <div class="label">Response 2</div>
+              <pre id="compareResponse2" class="code-block"></pre>
+            </div>
+          </div>
+          <div class="compare-body">
+            <div class="compare-section">
+              <div class="label">Diff</div>
+              <pre id="compareDiff" class="code-block"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="panel.js"></script>
+  </body>
+</html>
