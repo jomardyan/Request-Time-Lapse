@@ -26,14 +26,17 @@ const CONFIG = {
 // Files and directories to include
 const INCLUDE_PATTERNS = [
   'manifest.json',
+  'background.js',
   'devtools.html',
   'devtools.js',
   'panel.html',
   'panel.js',
   'styles.css',
+  'tutorial.html',
+  'images/**/*',
+  'assets/**/*',
   'README.md',
   'ENHANCEMENTS.md',
-  'assets/**/*',
 ];
 
 // Files and directories to exclude
@@ -47,8 +50,8 @@ const EXCLUDE_PATTERNS = [
   'package-lock.json',
   'setup-assets.*',
   'generate-assets.js',
+  'generate-icons.js',
   'pack-extension.js',
-  '*.md',
   'documentation/**',
 ];
 
@@ -66,15 +69,23 @@ function getTimestamp() {
 }
 
 /**
+ * Normalize path to use forward slashes
+ */
+function normalizePath(p) {
+  return p.replace(/\\/g, '/');
+}
+
+/**
  * Check if a file path should be excluded
  */
 function shouldExclude(filePath) {
+  const normalized = normalizePath(filePath);
   for (const pattern of EXCLUDE_PATTERNS) {
     if (pattern.includes('*')) {
       const regex = new RegExp('^' + pattern.replace(/\*/g, '.*').replace(/\./g, '\\.') + '$');
-      if (regex.test(filePath)) return true;
+      if (regex.test(normalized)) return true;
     } else {
-      if (filePath.includes(pattern)) return true;
+      if (normalized.includes(pattern)) return true;
     }
   }
   return false;
@@ -92,15 +103,16 @@ function getFilesToInclude(baseDir) {
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       const relativePath = relative ? path.join(relative, entry.name) : entry.name;
+      const normalizedRelative = normalizePath(relativePath);
 
       // Skip if excluded
-      if (shouldExclude(relativePath)) continue;
+      if (shouldExclude(normalizedRelative)) continue;
 
       if (entry.isDirectory()) {
         // Check if directory matches any include pattern
         const matches = INCLUDE_PATTERNS.some(pattern => {
           const patternBase = pattern.split('**')[0] || pattern.split('/*')[0];
-          return relativePath.startsWith(patternBase.replace(/\/$/, ''));
+          return normalizedRelative.startsWith(patternBase.replace(/\/$/, ''));
         });
 
         if (matches || INCLUDE_PATTERNS.some(p => p.includes('**'))) {
@@ -111,15 +123,15 @@ function getFilesToInclude(baseDir) {
         const matches = INCLUDE_PATTERNS.some(pattern => {
           if (pattern.includes('**')) {
             const base = pattern.split('**')[0];
-            return relativePath.startsWith(base);
+            return normalizedRelative.startsWith(base.replace(/\/$/, ''));
           }
-          return relativePath === pattern;
+          return normalizedRelative === pattern;
         });
 
         if (matches) {
           files.push({
             path: fullPath,
-            name: relativePath,
+            name: normalizedRelative,
           });
         }
       }
