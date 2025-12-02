@@ -1,241 +1,235 @@
-# Request Time-Lapse (DevTools Extension)
+# Request Time-Lapse
 
-DevTools panel that records and replays network requests across page reloads so you can track regressions, schema drift, and latency changes over time.
+[![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/jomardyan/Request-Time-Lapse/releases)
+[![License](https://img.shields.io/badge/license-Source%20Available-green)](LICENSE)
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-orange)](https://github.com/jomardyan/Request-Time-Lapse)
 
-## 🚀 Quick Start
+DevTools panel that records and replays network requests across page reloads for API regression debugging, schema tracking, and performance monitoring.
 
-### Installation
-1. Open Chrome/Edge `chrome://extensions`.
-2. Enable **Developer mode**.
-3. Click **Load unpacked** and select this folder.
-4. Open DevTools → you'll see a **Request Time-Lapse** tab.
+## Why Request Time-Lapse
 
-### Usage
-- Listens to `chrome.devtools.network.onRequestFinished` and stores request/response snapshots in IndexedDB.
-- Groups calls by `METHOD + pathname`, tracking environment/branch tags from headers or query params (`x-env`, `x-environment`, `x-deployment`, `env`, `stage`, `x-branch`, `branch`).
-- Timeline view shows status, latency, payload size, and mime type; selecting a call shows request/response plus a lightweight schema + JSON diff against the previous call for that endpoint.
-- One-click **Export bundle** downloads the latest history for the selected endpoint as JSON (last 20 calls).
+Modern web applications constantly evolve, and APIs change frequently. Request Time-Lapse helps developers detect breaking changes, track schema drift, and monitor performance regressions by maintaining a persistent history of network requests across browser sessions.
 
-## 📊 Features
+## Key Features
 
-### Core Capabilities
-✅ **Network Recording** - Capture all API requests with full request/response data
-✅ **Request Grouping** - Organize by endpoint (method + path)
-✅ **Schema Tracking** - Detect type changes in responses
-✅ **Performance Monitoring** - Track latency trends across requests
-✅ **JSON Diffing** - Compare response payloads between calls
-✅ **Data Persistence** - Store data in IndexedDB across page reloads
+- **Persistent Request History** - Records network calls across page reloads and browser sessions using IndexedDB
+- **Smart Request Grouping** - Automatically organizes requests by endpoint (HTTP method + pathname)
+- **Schema Change Detection** - Identifies type changes and missing fields in API responses
+- **Performance Tracking** - Monitors latency trends and detects performance regressions
+- **Environment-Aware** - Tracks deployment environments via headers (`x-env`, `x-environment`, `x-deployment`)
+- **JSON Diff Viewer** - Side-by-side comparison of request/response payloads
+- **Multiple Export Formats** - Export data as JSON, CSV, or HTML reports
+- **Keyboard Shortcuts** - Efficient navigation and control for power users
 
-### Advanced Features
-✨ **Smart Filtering** - Filter by status codes, latency, response content
-✨ **Multiple Export Formats** - JSON, CSV, HTML reports
-✨ **Comparison Mode** - Side-by-side snapshot comparison
-✨ **Theme Support** - Dark and light themes with persistence
-✨ **Keyboard Shortcuts** - Power user workflows
-✨ **Storage Monitoring** - Track IndexedDB usage with warnings
-✨ **Error Handling** - Graceful error recovery with user feedback
-✨ **Automatic Detection** - Identifies schema changes, latency spikes, server errors
+## Installation
 
-## 🎮 Keyboard Shortcuts
+### Chrome/Edge (Developer Mode)
+
+```bash
+# Clone the repository
+git clone https://github.com/jomardyan/Request-Time-Lapse.git
+cd Request-Time-Lapse
+```
+
+1. Open `chrome://extensions` in Chrome or Edge
+2. Enable **Developer mode** (toggle in top-right corner)
+3. Click **Load unpacked** and select the cloned folder
+4. Open DevTools (F12) → Navigate to **Request Time-Lapse** tab
+
+### Generate Promotional Assets (Optional)
+
+```bash
+# Install dependencies
+npm install
+
+# Generate assets for Chrome Web Store
+npm run generate-assets
+```
+
+## Quick Start
+
+### Basic Usage
+
+1. Open any web page with API calls
+2. Open DevTools (F12) and switch to the **Request Time-Lapse** tab
+3. Reload the page to start recording requests
+4. Click on any endpoint to view request/response details
+5. Select two requests to compare changes
+
+### Filtering Requests
+
+```javascript
+// Filter by status code
+Status: 200, 404, 500
+
+// Filter by latency
+Latency > 500ms
+
+// Filter by environment
+Environment: production, staging, dev
+```
+
+### Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
 | `Ctrl+K` / `Cmd+K` | Focus endpoint search |
 | `Ctrl+E` / `Cmd+E` | Export as JSON |
-| `Ctrl+T` / `Cmd+T` | Toggle theme |
-| `Ctrl+Shift+C` / `Cmd+Shift+C` | Toggle compare mode |
-| `↑` / `↓` | Navigate timeline |
+| `Ctrl+T` / `Cmd+T` | Toggle theme (dark/light) |
+| `Ctrl+Shift+C` / `Cmd+Shift+C` | Toggle comparison mode |
+| `↑` / `↓` | Navigate timeline entries |
 
-## 📁 Project Structure
+## Configuration
+
+### Adjust Storage Limits
+
+Modify `MAX_BODY_LENGTH` in `panel.js` to control response body truncation:
+
+```javascript
+const MAX_BODY_LENGTH = 15000; // bytes
+```
+
+### Custom Environment Detection
+
+Add custom headers for environment detection in `panel.js`:
+
+```javascript
+function detectEnvironment(request) {
+  const headers = request.headers || {};
+  const candidates = [
+    headers["x-custom-env"],     // Your custom header
+    headers["x-environment"],
+    headers["x-deployment"],
+    // Add more header names as needed
+  ];
+  // ...
+}
+```
+
+## Use Cases
+
+### API Regression Detection
+
+Track schema changes across deployments:
+
+```
+Endpoint: POST /api/users
+Call #5: { id, name, email, role }
+Call #6: { id, name, email }  ← "role" field removed!
+```
+
+### Performance Monitoring
+
+Identify latency spikes:
+
+```
+11:45 → 245ms ✅ Normal
+11:46 → 523ms ⚠️ Latency spike detected
+11:47 → 1250ms ❌ Potential timeout issue
+```
+
+### Cross-Environment Testing
+
+Compare responses between environments:
+
+```
+Dev:  { feature_flag: true, debug_mode: true }
+Prod: { feature_flag: false }
+```
+
+## Project Structure
 
 ```
 .
-├── manifest.json              # Extension metadata
-├── devtools.html/js           # DevTools panel setup
-├── panel.html                 # Main UI
-├── panel.js                   # Core logic (700+ lines)
-├── styles.css                 # Theme & styling
-├── generate-assets.js         # Asset generation script
-├── package.json               # Node.js dependencies
-├── README.md                  # This file
-├── ENHANCEMENTS.md            # Feature documentation
-├── ASSET_GENERATION.md        # Asset generator docs
-├── QUICKSTART.md              # Quick start guide
-└── assets/                    # Generated promotional assets
+├── manifest.json          # Extension configuration
+├── devtools.html/js       # DevTools panel registration
+├── panel.html             # Main UI layout
+├── panel.js               # Core application logic
+├── styles.css             # Theme and component styles
+├── background.js          # Service worker
+├── generate-assets.js     # Promotional asset generator
+└── docs/
+    ├── QUICKSTART.md      # Quick reference guide
+    ├── ENHANCEMENTS.md    # Feature documentation
+    └── DEVELOPER_GUIDE.md # Development guidelines
 ```
 
-## ⚙️ Configuration
+## Development
 
-### Adjust Storage Limits
-In `panel.js`, modify `MAX_BODY_LENGTH`:
-```javascript
-const MAX_BODY_LENGTH = 15000; // Truncate bodies larger than this
-```
+### Running Locally
 
-### Modify Environment Detection
-In `panel.js`, update `detectEnvironment()` to recognize your custom headers:
-```javascript
-const candidates = [
-  headers["x-custom-env"],  // Add your header name
-  headers["x-environment"],
-  // ... other sources
-];
-```
-
-## 🎨 Generate Promotional Assets
-
-This project includes a script to generate Chrome Web Store promotional graphics.
-
-### Quick Setup
 ```bash
-# Windows
-setup-assets.bat
-
-# macOS/Linux
-chmod +x setup-assets.sh
-./setup-assets.sh
-
-# Manual
-npm install
-npm run generate-assets
+# No build process required - load directly as unpacked extension
+chrome://extensions → Load unpacked → Select folder
 ```
 
-### Generated Assets
-- **Store Icon** (128×128)
-- **Screenshots** (1280×800, 640×400)
-- **Promo Tiles** (440×280, 1400×560)
+### Testing
 
-See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.
+1. Open DevTools on any page with network activity
+2. Navigate to Request Time-Lapse tab
+3. Trigger API calls through the page
+4. Verify requests appear in the timeline
 
-## 📈 Use Cases
+### Adding New Features
 
-### 1. **API Regression Detection**
-Track if endpoints change schema unexpectedly:
-```
-Example: POST /api/users
-Call #5: { id, name, email, role }
-Call #6: { id, name, email }  ← role field removed!
-```
+**New Filter Type:**
+- Add UI control in `panel.html`
+- Implement filter logic in `filterTimeline()` function
+- Update `renderTimeline()` to apply the filter
 
-### 2. **Performance Tracking**
-Identify latency regressions:
-```
-Timeline View:
-11:45 → 245ms ✅
-11:46 → 523ms ⚠️ (latency spike)
-11:47 → 1250ms ❌ (timeout)
-```
+**New Export Format:**
+- Create `exportAs<Format>()` function in `panel.js`
+- Add export option to the export dropdown menu
+- Test download functionality
 
-### 3. **Environment Debugging**
-Switch between dev/staging/prod:
-```
-Filter by env tag → Only see prod requests
-Compare dev vs prod responses → Spot differences
-```
+## Known Limitations
 
-### 4. **Cross-Reload Testing**
-Reload the page and keep recording:
-```
-Page Load #1: 3 requests captured
-Page Reload: 3 new requests recorded
-Compare: Did anything change?
-```
+- Response bodies truncated to 15KB by default (configurable)
+- Comparison mode limited to last 20 requests per endpoint
+- IndexedDB storage capped at ~50MB (browser-dependent)
+- Large binary responses not fully captured
 
-## 🔧 Development
+## Contributing
 
-### Structure
-- **panel.js**: Main application logic (~700 lines)
-  - State management
-  - DOM rendering
-  - IndexedDB operations
-  - Export functionality
-  - Error handling
+While the source code is available for review, **modifications and redistribution are not permitted** under the current license. For feature requests or bug reports:
 
-- **styles.css**: Theming
-  - Dark theme (default)
-  - Light theme (new!)
-  - Component styles
+1. Open an issue on GitHub with detailed information
+2. Provide reproduction steps for bugs
+3. Suggest use cases for feature requests
 
-- **panel.html**: UI markup
-  - Controls and filters
-  - Three-column layout
-  - Comparison view
+## License
 
-### Adding Features
+This project is licensed under a **Source Available License**. You are free to:
+- Use the extension for personal, educational, or commercial purposes
+- View and study the source code
+- Install and run the extension
 
-1. **New Filter Type**
-   - Add input to `panel.html` controls
-   - Implement filter logic in `filterTimeline()`
-   - Update `renderTimeline()` to use filter
+You are **not permitted** to:
+- Clone, fork, or redistribute the source code
+- Modify or create derivative works
+- Sell or sublicense the software
 
-2. **New Export Format**
-   - Create `exportAs<Format>()` function
-   - Add to export handler
-   - Test file download
+See the [LICENSE](LICENSE) file for complete terms.
 
-3. **New Comparison Metric**
-   - Extend `buildComparisonDiff()`
-   - Add to comparison view
-   - Update styling as needed
+## Privacy
 
-## 🐛 Known Limitations
+Request Time-Lapse operates entirely locally within your browser. No data is collected, transmitted, or stored on external servers. All request history is stored in your browser's IndexedDB.
 
-- Bodies are truncated to ~15 KB for storage sanity; bump `MAX_BODY_LENGTH` if needed.
-- Comparison mode shows last 20 calls max (to keep UI performant).
-- IndexedDB storage limited to browser quota (~50MB estimated).
+For details, see the [Privacy Policy](PRIVACY_POLICY.md).
 
-## 💡 Future Enhancements
+## Support
 
-- 📅 Date range picker for filtering
-- 📊 P95/P99 latency calculations
-- 🔁 Request retry with modified payloads
-- ✓ Schema validation against JSON schemas
-- 🔔 Automatic regression alerts
-- 👥 Team sync and sharing
-- 🌐 Cloud backup of recordings
-- 📈 Graphical performance charts
+- **Documentation**: Check [QUICKSTART.md](QUICKSTART.md) for quick reference
+- **Features**: See [ENHANCEMENTS.md](ENHANCEMENTS.md) for detailed feature list
+- **Development**: Review [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for technical details
+- **Issues**: Report bugs via [GitHub Issues](https://github.com/jomardyan/Request-Time-Lapse/issues)
 
-## 📝 Notes
+## Author
 
-### Optional Future Hooks
-- Call out to a local helper that exposes git branch/commit, CI build number, or env metadata and attach to each snapshot.
-- Webhook integration for automatic alerts on regressions.
-
-### Data Management
-- Hit **Clear** to wipe IndexedDB from the panel.
-- Export before clearing to preserve important data.
-- Storage indicator warns at 90% capacity.
-
-## 🎯 Best Practices
-
-1. **Regular Exports** - Export important test runs before clearing
-2. **Environment Tagging** - Use x-env headers for easy filtering
-3. **Meaningful Branches** - Use x-branch headers with descriptive names
-4. **Review Diffs** - Always check schema diffs after API changes
-5. **Monitor Latency** - Watch for performance regressions
-
-## 📄 License
-
-MIT
-
-## 🔒 Privacy Policy
-
-This extension does not collect, store, or transmit any personal data. All processing occurs locally in your browser. See our full [Privacy Policy](PRIVACY_POLICY.md) for details.
-
-## 🤝 Contributing
-
-Found a bug? Have a feature request?
-
-1. Create an issue with details
-2. Fork and create a feature branch
-3. Submit a pull request
-
-## 📞 Support
-
-- Check [ENHANCEMENTS.md](ENHANCEMENTS.md) for feature details
-- See [ASSET_GENERATION.md](ASSET_GENERATION.md) for asset help
-- Review [QUICKSTART.md](QUICKSTART.md) for quick reference
+**Hayk Jomardyan**
+- GitHub: [@jomardyan](https://github.com/jomardyan)
+- Repository: [Request-Time-Lapse](https://github.com/jomardyan/Request-Time-Lapse)
 
 ---
 
-**Happy debugging! 🎉**
+**Version 0.1.0** | [Changelog](https://github.com/jomardyan/Request-Time-Lapse/releases) | [Report Issue](https://github.com/jomardyan/Request-Time-Lapse/issues)
