@@ -218,6 +218,10 @@ Compare: Did anything change?
 
 MIT
 
+## 🔒 Privacy Policy
+
+This extension does not collect, store, or transmit any personal data. All processing occurs locally in your browser. See our full [Privacy Policy](PRIVACY_POLICY.md) for details.
+
 ## 🤝 Contributing
 
 Found a bug? Have a feature request?
